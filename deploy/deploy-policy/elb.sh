@@ -1,0 +1,1 @@
+kubectl create configmap policy-elb --from-file=../policy/elb.rego -n opa
