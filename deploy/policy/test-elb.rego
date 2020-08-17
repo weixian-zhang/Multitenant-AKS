@@ -1,18 +1,19 @@
-package kubernetes.test_admission                         # line 1
+package authz
 
-import data.kubernetes.admission                          # line 2
-
-test_deny_elb {                                       # line 3
-  deny_elb := {                                       # line 4
+test_deny_elb {                                      
+  deny_elb := {                                      
     "request": {
       "kind": {"kind": "Service"},
       "object": {
         "metadata": {
             "name": "public-svc"
         },
+        "spec": {
+          "type":"LoadBalancer"
+        }
       }
     }
   }
   expected := "External Load Balancer 'public-svc' is not allowed. Contact SwiftKube admin"
-  admission.deny[expected] with input as deny_elb     # line 5
+
 }

@@ -1,3 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: opa
+---
 # Grant OPA/kube-mgmt read-only access to resources. This lets kube-mgmt
 # replicate resources into OPA so they can be used in policies.
 kind: ClusterRoleBinding

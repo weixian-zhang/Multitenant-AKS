@@ -1,9 +1,17 @@
-package kubernetes.admission                                                
+package kubernetes.admission
 
-deny[msg] {                                                                
-  input.request.kind.kind == "Service"
-  elbName :=  input.request.metadata.name                                  
-  elb := input.request.object.spec.type              
-  elb == "LoadBalancer"                                  
-  msg := sprintf("External Load Balancer '%v' is not allowed. Contact SwiftKube admin", elbName)       
+import data.kubernetes.namespaces
+
+import input.request.object.metadata.annotations as annotations
+
+deny[msg] {
+    input.request.kind.kind = "Service"
+    input.request.object.spec.type = "LoadBalancer"
+    msg = "LoadBalancer Services are not permitted"
 }
+
+# deny[msg] {
+#   input.request.kind.kind = "Service"
+#   input.request.object.spec.type = "LoadBalancer"
+#   msg ="External Load Balancer is not allowed. Contact SwiftKube admin"   
+# }
