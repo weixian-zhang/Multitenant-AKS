@@ -1,0 +1,19 @@
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: k8sdenyelb
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sDenyELB
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8sdenyelb
+
+        violation[{"msg": msg}] {
+          input.review.kind.kind = "Service"
+          input.review.object.spec.type = "LoadBalancer"
+          msg := "For security reasons, external load balancer is not allowed by default, contact SwiftKube admin."
+        }

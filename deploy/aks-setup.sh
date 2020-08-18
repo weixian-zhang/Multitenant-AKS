@@ -16,14 +16,5 @@ az role assignment create --role "Azure Kubernetes Service RBAC Cluster Admin" \
 az role assignment create --role "Azure Kubernetes Service RBAC Admin" \
 --assignee <AAD/Group/Properties/GroupObject-ID> --scope $AKS_ID/namespaces/<namespace-name>
 
-#OPA setup
-#https://medium.com/capital-one-tech/policy-enabled-kubernetes-with-open-policy-agent-3b612b3f0203
-
-#create ssl cret as secret for opa->kube-api-server comms
-kubectl create secret tls opa-server --cert=server.crt --key=server.key
-
-#OPA cli download, needed for rego test
-#https://www.openpolicyagent.org/docs/latest/#running-opa
-
-#deploy repolicy as configmap
-kubectl create configmap policy-elb --from-file=./policy/elb.rego -n opa
+#OPA Gatekeep v3.0 setup
+#https://github.com/open-policy-agent/gatekeeper

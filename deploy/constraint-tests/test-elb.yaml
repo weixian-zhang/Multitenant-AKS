@@ -1,7 +1,8 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: public-svc
+  name: elb-svc
+  namespace: swiftcaps-apps
 spec:
   type: LoadBalancer
   ports:
