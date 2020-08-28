@@ -6,7 +6,7 @@
         {
             "label": "go build Api",
             "type": "shell",
-            "command": "go build api.go",
+            "command": "go build",
             "options": {
                 "cwd": "${workspaceFolder}/src"
             }

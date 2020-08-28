@@ -14,9 +14,13 @@ type Resp struct {
 }
 
 func main() {
+	port := os.Getenv("port")
+	if port == "" {
+		port = "8080"
+	}
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/api/resp", Response)
-	logErr(http.ListenAndServe(":" + os.Getenv("port"), router))
+	logErr(http.ListenAndServe(":" + port, router))
 }
 
 func Response(w http.ResponseWriter, r *http.Request){

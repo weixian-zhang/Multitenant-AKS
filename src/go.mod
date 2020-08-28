@@ -1,4 +1,4 @@
-module swiftoffice.org/sharedkube/networkpolicy
+module swiftoffice.org/sharedkube/networkpolicy/api
 
 go 1.14
 
