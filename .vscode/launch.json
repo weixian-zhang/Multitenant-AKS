@@ -12,7 +12,10 @@
             "program": "${workspaceFolder}/src",
             "env": {
                 "resp": "web tier",
-                "port": 8080
+                "port": 8080,
+                "oocSvcIP": "194.168.0.22",
+                "oocSvcPort": "80",
+                "oocSvcPath": "/api/resp"
             },
             "args": []
         }

@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-apiapp
+  namespace: swiftkeys-apps
+spec:
+  selector:
+    app: apiapp
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apiapp
+  namespace: swiftkeys-apps
+spec: 
+  replicas: 2
+  selector:
+    matchLabels:
+      app: apiapp
+  template:
+    metadata:
+      labels:
+        app: apiapp
+    spec:
+      containers:
+      - name: apiapp
+        image: acrswiftoffice.azurecr.io/api:api-0.0.1
+        env:
+          - name: port
+            value: "8080"
+          - name: "resp"
+            value: "Swiftkeys - web tier"
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080

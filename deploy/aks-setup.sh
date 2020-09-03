@@ -18,3 +18,4 @@ az role assignment create --role "Azure Kubernetes Service RBAC Admin" \
 
 #OPA Gatekeep v3.0 setup
 #https://github.com/open-policy-agent/gatekeeper
+kubectl create ns swiftcaps-apps

@@ -1,12 +1,14 @@
 package main
 
-
-import(
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
-	"log"
+
 	"github.com/gorilla/mux"
-	"encoding/json"
 )
 
 type Resp struct {
@@ -19,7 +21,10 @@ func main() {
 		port = "8080"
 	}
 	router := mux.NewRouter().StrictSlash(true)
+
 	router.HandleFunc("/api/resp", Response)
+	router.HandleFunc("/api/calloocluster", CallOOClusterService)
+
 	logErr(http.ListenAndServe(":" + port, router))
 }
 
@@ -28,6 +33,29 @@ func Response(w http.ResponseWriter, r *http.Request){
 	err := json.NewEncoder(w).Encode(Resp{Message: respenvset})
 	
 	logErr(err)
+}
+
+func CallOOClusterService(w http.ResponseWriter, r *http.Request) {
+
+	externalSvcIP := os.Getenv("oocSvcIP")
+	externalSvcPort := os.Getenv("oocSvcPort")
+	externalSvcPath := os.Getenv("oocSvcPath")
+
+	resp , err :=
+		http.Get(fmt.Sprintf("http://%v:%v/%v",externalSvcIP, externalSvcPort, externalSvcPath ))
+
+	if err != nil {
+		fmt.Println(err)
+		json.NewEncoder(w).Encode(Resp{Message: err.Error()})
+		return
+	}
+
+	data, _ := ioutil.ReadAll(resp.Body)
+	jsonData := string(data)
+
+	fmt.Println(jsonData)
+
+	json.NewEncoder(w).Encode(Resp{Message: jsonData})
 }
 
 func logErr(msg interface{}) {

@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: swiftcaps-webtier
+  labels:
+    project: swiftcaps
+    tier: web
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: swiftcaps-apptier
+  labels:
+    project: swiftcaps
+    tier: app
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: swiftcaps-gut
+  labels:
+    project: swiftcaps
+    tier: gut
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: swiftkeys-apptier
+  labels:
+    project: swiftkeys
+    tier: app
