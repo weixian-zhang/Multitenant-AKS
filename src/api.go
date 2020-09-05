@@ -15,6 +15,14 @@ type Resp struct {
 	Message string
 }
 
+type Envar struct {
+	HostingPort   string
+	Response      string
+	ExApiIPOrFQDN string
+	ExApiPort     string
+	ExApiPath     string
+}
+
 func main() {
 	port := os.Getenv("port")
 	if port == "" {
@@ -22,27 +30,46 @@ func main() {
 	}
 	router := mux.NewRouter().StrictSlash(true)
 
-	router.HandleFunc("/api/resp", Response)
-	router.HandleFunc("/api/calloocluster", CallOOClusterService)
+	router.HandleFunc("/api/resp", response)
+	router.HandleFunc("/api/env", getEnvars)
+	router.HandleFunc("/api/callapi", callAPI)
 
-	logErr(http.ListenAndServe(":" + port, router))
+	logErr(http.ListenAndServe(":"+port, router))
 }
 
-func Response(w http.ResponseWriter, r *http.Request){
+func response(w http.ResponseWriter, r *http.Request) {
 	respenvset := os.Getenv("resp")
 	err := json.NewEncoder(w).Encode(Resp{Message: respenvset})
-	
+
 	logErr(err)
 }
 
-func CallOOClusterService(w http.ResponseWriter, r *http.Request) {
-
-	externalSvcIP := os.Getenv("oocSvcIP")
+func getEnvars(w http.ResponseWriter, r *http.Request) {
+	port := os.Getenv("port")
+	resp := os.Getenv("resp")
+	externalSvcIPFQDN := os.Getenv("oocSvcIPOrFQDN")
 	externalSvcPort := os.Getenv("oocSvcPort")
 	externalSvcPath := os.Getenv("oocSvcPath")
 
-	resp , err :=
-		http.Get(fmt.Sprintf("http://%v:%v/%v",externalSvcIP, externalSvcPort, externalSvcPath ))
+	envvars := Envar{
+		HostingPort:   port,
+		Response:      resp,
+		ExApiIPOrFQDN: externalSvcIPFQDN,
+		ExApiPort:     externalSvcPort,
+		ExApiPath:     externalSvcPath,
+	}
+
+	json.NewEncoder(w).Encode(envvars)
+}
+
+func callAPI(w http.ResponseWriter, r *http.Request) {
+
+	externalSvcIP := os.Getenv("oocSvcIPOrFQDN")
+	externalSvcPort := os.Getenv("oocSvcPort")
+	externalSvcPath := os.Getenv("oocSvcPath")
+
+	resp, err :=
+		http.Get(fmt.Sprintf("http://%v:%v/%v", externalSvcIP, externalSvcPort, externalSvcPath))
 
 	if err != nil {
 		fmt.Println(err)
@@ -62,10 +89,8 @@ func logErr(msg interface{}) {
 	if t, ok := msg.(error); ok {
 		log.Fatalln(t)
 	} else {
-		if msg!= nil {
+		if msg != nil {
 			log.Println(msg)
 		}
 	}
 }
-
-

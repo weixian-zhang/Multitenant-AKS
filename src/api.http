@@ -1,4 +1,6 @@
 # ctrl + alt + R to run
 http://localhost:8080/api/resp
 
-http://localhost:8080/api/calloocluster
+http://localhost:8080/api/callapi
+
+http://localhost:8080/api/env

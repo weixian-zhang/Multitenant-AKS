@@ -13,9 +13,9 @@
             "env": {
                 "resp": "web tier",
                 "port": 8080,
-                "oocSvcIP": "194.168.0.22",
-                "oocSvcPort": "80",
-                "oocSvcPath": "/api/resp"
+                "oocSvcIPOrFQDN": "https://b9304ae95794bcb819c07d05670d9440.m.pipedream.net",
+                "oocSvcPort": "443",
+                "oocSvcPath": ""
             },
             "args": []
         }
