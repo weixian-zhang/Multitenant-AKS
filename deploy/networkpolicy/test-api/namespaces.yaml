@@ -17,14 +17,6 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: swiftcaps-gut
-  labels:
-    project: swiftcaps
-    tier: gut
----
-apiVersion: v1
-kind: Namespace
-metadata:
   name: swiftkeys-apptier
   labels:
     project: swiftkeys

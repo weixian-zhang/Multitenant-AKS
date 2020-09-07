@@ -15,7 +15,7 @@
                 "port": 8080,
                 "oocSvcIPOrFQDN": "https://b9304ae95794bcb819c07d05670d9440.m.pipedream.net",
                 "oocSvcPort": "443",
-                "oocSvcPath": ""
+                "oocSvcPath": "/"
             },
             "args": []
         }

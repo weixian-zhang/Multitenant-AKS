@@ -1,9 +1,14 @@
 #setup AKS
-az aks create --resource-group resource_group_name --name aks_cluster_name \
+az aks create --resource-group rg-swiftcloud-kubernetes --name aks-swiftoffice \
+--vnet-subnet-id "/subscriptions/ee611083-4581-4ba1-8116-a502d4539206/resourceGroups/rg-swiftcloud-kubernetes/providers/Microsoft.Network/virtualNetworks/vnet-k8s/subnets/subnet-k8s" \
+--network-plugin azure \ #azure cni
+--network-policy calico \
 --enable-aad --enable-azure-rbac \
---aad-admin-group-object-ids xxxxxxxx-88xx-49xx-aaxx-baxxxxxxxx \ #AAD Group object id
---aad-tenant-id xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \ #AAD tenant id
+--aad-admin-group-object-ids fb24271c-88c9-49b4-aa11-bac3b16433d7 \#AAD Group object id
+--aad-tenant-id 72f988bf-86f1-41af-91ab-2d7cd011db47 \#AAD tenant id
 --node-count 1 --enable-addons monitoring --generate-ssh-keys
+
+az aks get-credentials --resource-group rg-swiftcloud-kubernetes --name aks-swiftoffice
 
 #get AKS ID
 AKS_ID=$(az aks show -g MyResourceGroup -n MyManagedCluster --query id -o tsv)

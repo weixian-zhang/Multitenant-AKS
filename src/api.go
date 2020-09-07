@@ -1,14 +1,21 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+)
+
+var (
+	_logger *zap.Logger
 )
 
 type Resp struct {
@@ -24,24 +31,31 @@ type Envar struct {
 }
 
 func main() {
+
+	initZaplog()
+
 	port := os.Getenv("port")
 	if port == "" {
 		port = "8080"
 	}
+
+	logInfoErr(fmt.Sprintf("Listening on port: %v", port))
+
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/api/resp", response)
 	router.HandleFunc("/api/env", getEnvars)
 	router.HandleFunc("/api/callapi", callAPI)
 
-	logErr(http.ListenAndServe(":"+port, router))
+	logInfoErr(http.ListenAndServe(":"+port, router))
 }
 
 func response(w http.ResponseWriter, r *http.Request) {
 	respenvset := os.Getenv("resp")
 	err := json.NewEncoder(w).Encode(Resp{Message: respenvset})
 
-	logErr(err)
+	logInfoErr("/api/resp processed")
+	logInfoErr(err)
 }
 
 func getEnvars(w http.ResponseWriter, r *http.Request) {
@@ -58,6 +72,9 @@ func getEnvars(w http.ResponseWriter, r *http.Request) {
 		ExApiPort:     externalSvcPort,
 		ExApiPath:     externalSvcPath,
 	}
+	b, _ := json.Marshal(envvars)
+
+	logInfoErr(fmt.Sprintf("/api/env processed. %v", string(b)))
 
 	json.NewEncoder(w).Encode(envvars)
 }
@@ -68,29 +85,49 @@ func callAPI(w http.ResponseWriter, r *http.Request) {
 	externalSvcPort := os.Getenv("oocSvcPort")
 	externalSvcPath := os.Getenv("oocSvcPath")
 
-	resp, err :=
-		http.Get(fmt.Sprintf("http://%v:%v/%v", externalSvcIP, externalSvcPort, externalSvcPath))
+	logInfoErr(fmt.Sprintf("/api/callapi calling another API @ http://%v:%v", externalSvcIP, externalSvcPort))
+
+	req, err := http.NewRequest("GET", fmt.Sprintf("http://%v:%v%v", externalSvcIP, externalSvcPort, externalSvcPath), nil)
+	ctx, cancelFunc := context.WithTimeout(req.Context(), 3 * time.Second)
+	defer cancelFunc()
+
+	req = req.WithContext(ctx)
+	
+	res, err := http.DefaultClient.Do(req)
 
 	if err != nil {
-		fmt.Println(err)
+		logInfoErr(err)
 		json.NewEncoder(w).Encode(Resp{Message: err.Error()})
 		return
 	}
 
-	data, _ := ioutil.ReadAll(resp.Body)
+	data, _ := ioutil.ReadAll(res.Body)
 	jsonData := string(data)
 
-	fmt.Println(jsonData)
+	logInfoErr(fmt.Sprintf("response from API: %v", jsonData))
 
 	json.NewEncoder(w).Encode(Resp{Message: jsonData})
 }
 
-func logErr(msg interface{}) {
+func logInfoErr(msg interface{}) {
 	if t, ok := msg.(error); ok {
-		log.Fatalln(t)
+		_logger.Error(t.Error())
 	} else {
 		if msg != nil {
-			log.Println(msg)
+			if m, ok := msg.(string); ok {
+				_logger.Info(m)
+			}
+			
 		}
 	}
+}
+
+func initZaplog() {
+	loggerConfig := zap.NewProductionConfig()
+	loggerConfig.OutputPaths = []string{"stdout", "stderr"}
+	loggerConfig.EncoderConfig.TimeKey = "timestamp"
+	loggerConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	loggerConfig.EncoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
+	logger, _ := loggerConfig.Build()
+	_logger = logger
 }

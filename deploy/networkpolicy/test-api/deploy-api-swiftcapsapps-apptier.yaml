@@ -2,10 +2,12 @@ apiVersion: v1
 kind: Service
 metadata:
   name: svc-apps-apptier-api
-  namespace: swiftcaps-apps
+  namespace: swiftcaps-apptier
 spec:
   selector:
+    tier: app
     app: apiapp
+    project: swiftcaps
   ports:
     - protocol: TCP
       port: 80
@@ -15,11 +17,11 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: configmap-swiftcapsapps-apptier
-  namespace: swiftcaps-apps
+  namespace: swiftcaps-apptier
 data:
   port: "8080"
   resp: "Swiftcaps/apps/apptier received request"
-  oocSvcIPOrFQDN: "172.19.0.1"
+  oocSvcIPOrFQDN: "173.0.0.4"
   oocSvcPort: "8080"
   oocSvcPath: "/api/resp"
 ---
@@ -27,7 +29,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: apiapp
-  namespace: swiftcaps-apps
+  namespace: swiftcaps-apptier
 spec: 
   replicas: 2
   selector:
@@ -42,10 +44,37 @@ spec:
     spec:
       containers:
       - name: apiapp
-        image: acrswiftoffice.azurecr.io/networkpolicy:api-0.0.1
+        image: acrswiftoffice.azurecr.io/networkpolicy:api-1.1.0
+        imagePullPolicy: Always
+        env:
+          - name: port
+            valueFrom:
+                configMapKeyRef:
+                  name: configmap-swiftcapsapps-apptier
+                  key: port
+          - name: resp
+            valueFrom:
+                configMapKeyRef:
+                  name: configmap-swiftcapsapps-apptier
+                  key: resp
+          - name: oocSvcIPOrFQDN
+            valueFrom:
+                configMapKeyRef:
+                  name: configmap-swiftcapsapps-apptier
+                  key: oocSvcIPOrFQDN
+          - name: oocSvcPort
+            valueFrom:
+                configMapKeyRef:
+                  name: configmap-swiftcapsapps-apptier
+                  key: oocSvcPort
+          - name: oocSvcPath
+            valueFrom:
+                configMapKeyRef:
+                  name: configmap-swiftcapsapps-apptier
+                  key: oocSvcPath
         resources:
           limits:
             memory: "128Mi"
-            cpu: "500m"
+            cpu: "100m"
         ports:
         - containerPort: 8080

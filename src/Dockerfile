@@ -1,4 +1,5 @@
-FROM golang:1.12-alpine
+FROM golang:1.12-alpine AS build_base
+
 
 RUN apk add --no-cache git
 
@@ -16,10 +17,10 @@ COPY . .
 # Build the Go app
 RUN go build -o ./out .
 
-#ENV port=8080 #env set in kube
+# Start fresh from a smaller image
+FROM alpine:3.9
 
-# This container exposes port 8080 to the outside world
-#EXPOSE 8080
+COPY --from=build_base /app/out /app/main
 
 # Run the binary program produced by `go install`
-CMD ["./out"]
+CMD ["/app/main"]

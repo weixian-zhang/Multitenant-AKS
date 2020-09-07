@@ -20,15 +20,15 @@ metadata:
   namespace: swiftcaps-webtier
 data:
   port: "8080"
-  resp: "Swiftcaps/webtier/api received request"
-  oocSvcIPOrFQDN: "svc-apps-apptier-api.swiftcaps-apps.svc.cluster.local"
+  resp: "Swiftcaps/Webtier/api received request"
+  oocSvcIPOrFQDN: "svc-apps-apptier-api.swiftcaps-apptier.svc.cluster.local"
   oocSvcPort: "80"
-  oocSvcPath: "/api/resp"
+  oocSvcPath: "/api/callapi"
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deploy-apiapp
+  name: apiapp
   namespace: swiftcaps-webtier
 spec: 
   replicas: 2
@@ -46,7 +46,7 @@ spec:
     spec:
       containers:
       - name: apiapp
-        image: acrswiftoffice.azurecr.io/networkpolicy:api-0.0.1
+        image: acrswiftoffice.azurecr.io/networkpolicy:api-1.0.0
         imagePullPolicy: Always
         env:
           - name: port
