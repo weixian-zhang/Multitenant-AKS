@@ -1,0 +1,17 @@
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name: np-webapp-apiapp-
+  namespace: swiftoffice-networkpolicy
+spec:
+  selector: 
+    project: swiftcaps
+    tier: web
+  egress:
+  - action: Allow
+    protocol: TCP
+    source:
+      selector: color == 'blue'
+    destination:
+      ports:
+        - 6379

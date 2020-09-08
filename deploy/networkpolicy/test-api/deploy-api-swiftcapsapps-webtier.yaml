@@ -23,7 +23,7 @@ data:
   resp: "Swiftcaps/Webtier/api received request"
   oocSvcIPOrFQDN: "svc-apps-apptier-api.swiftcaps-apptier.svc.cluster.local"
   oocSvcPort: "80"
-  oocSvcPath: "/api/callapi"
+  oocSvcPath: "/api/resp"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -46,7 +46,7 @@ spec:
     spec:
       containers:
       - name: apiapp
-        image: acrswiftoffice.azurecr.io/networkpolicy:api-1.0.0
+        image: acrswiftoffice.azurecr.io/networkpolicy:api-1.1.0
         imagePullPolicy: Always
         env:
           - name: port

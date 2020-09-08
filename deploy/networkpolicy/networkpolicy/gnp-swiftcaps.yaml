@@ -1,0 +1,10 @@
+apiVersion: crd.projectcalico.org/v1
+kind: GlobalNetworkPolicy
+metadata:
+  name: gnp-swiftcaps
+spec:
+  selector: projectcalico.org/namespace == "swiftcaps-apptier"
+  ingress:
+    - action: Deny
+      namespaceSelector: projectcalico.org/swiftcaps-webtier
+       
