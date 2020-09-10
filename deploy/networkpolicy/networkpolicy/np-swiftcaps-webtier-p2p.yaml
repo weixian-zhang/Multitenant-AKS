@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: np-test-web
+  namespace: swiftcaps-webtier
+spec:
+  podSelector:
+    matchLabels:
+      tier: web
+      app: apiapp
+      project: swiftcaps
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            run: test

@@ -1,10 +1,41 @@
-apiVersion: crd.projectcalico.org/v1
+# Create a custom resource instance of the GlobalNetworkPolicy
+# which allows all ingress and egress traffic.
+#https://octetz.com/docs/2019/2019-04-22-netpol-api-k8s/
+
+---
+apiVersion: "crd.projectcalico.org/v1"
 kind: GlobalNetworkPolicy
 metadata:
-  name: gnp-swiftcaps
+  name: gnp-swiftcaps-allow-intertier
 spec:
-  selector: projectcalico.org/namespace == "swiftcaps-apptier"
+  order: 10
+  selector: projectcalico.org/namespace == "swiftcaps-webtier"
+  types:
+  - Ingress
+  - Egress
+
   ingress:
-    - action: Deny
-      namespaceSelector: projectcalico.org/swiftcaps-webtier
-       
+  - action: Allow
+  egress:
+  - action: Allow
+    destination:
+      namespaceSelector: name == 'swiftcaps-webtier'
+  - action: Deny
+    destination:
+      namespaceSelector: name == 'swiftcaps-apptier'
+---
+apiVersion: "crd.projectcalico.org/v1"
+kind: GlobalNetworkPolicy
+metadata:
+  name: gnp-swiftcaps-deny-restofns
+spec:
+  order: 500
+  selector: projectcalico.org/namespace == "swiftcaps-webtier"
+  types:
+  - Ingress
+  - Egress
+
+  ingress:
+  - action: Deny
+  egress:
+  - action: Deny

@@ -1,31 +1,20 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: swiftoffice-networkpolicy
-  labels:
-    project: swiftoffice
-    isclusterresource: "true"
----
-apiVersion: v1
-kind: Namespace
-metadata:
   name: swiftcaps-webtier
   labels:
-    project: swiftcaps
-    tier: web
+    project: swiftcaps-webtier
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: swiftcaps-apptier
   labels:
-    project: swiftcaps
-    tier: app
+    project: swiftcaps-apptier
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: swiftkeys-apptier
   labels:
-    project: swiftkeys
-    tier: app
+    project: swiftkeys-apptier

@@ -20,7 +20,7 @@ metadata:
   namespace: swiftcaps-apptier
 data:
   port: "8080"
-  resp: "Swiftcaps/apps/apptier received request"
+  resp: "Swiftcaps/apptier received request"
   oocSvcIPOrFQDN: "173.0.0.4"
   oocSvcPort: "8080"
   oocSvcPath: "/api/resp"
