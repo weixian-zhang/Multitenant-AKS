@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -81,14 +82,33 @@ func getEnvars(w http.ResponseWriter, r *http.Request) {
 
 func callAPI(w http.ResponseWriter, r *http.Request) {
 
+	var externalSvcScheme string
+	if scheme := os.Getenv("oocSvcScheme"); scheme == "" {
+		externalSvcScheme = "http"
+	} else {
+		externalSvcScheme = scheme
+	}
 	externalSvcIP := os.Getenv("oocSvcIPOrFQDN")
+
+	var exSvcHeaderKey string
+	var exSvcHeaderValue string
+	if exSvcHeader := os.Getenv("oocSvcHeader"); exSvcHeader != "" {
+		sSlice := strings.Split(exSvcHeader, "=")
+		exSvcHeaderKey = sSlice[0]
+		exSvcHeaderValue = sSlice[1]
+	}
+	
 	externalSvcPort := os.Getenv("oocSvcPort")
 	externalSvcPath := os.Getenv("oocSvcPath")
 
-	logInfoErr(fmt.Sprintf("/api/callapi calling another API @ http://%v:%v", externalSvcIP, externalSvcPort))
+	logInfoErr(fmt.Sprintf("/api/callapi calling another API @ %v://%v:%v%v", externalSvcScheme, externalSvcIP, externalSvcPort,externalSvcPath))
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("http://%v:%v%v", externalSvcIP, externalSvcPort, externalSvcPath), nil)
-	ctx, cancelFunc := context.WithTimeout(req.Context(), 3 * time.Second)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%v://%v:%v%v", externalSvcScheme, externalSvcIP, externalSvcPort, externalSvcPath), nil)
+	if exSvcHeaderKey != "" {
+		req.Header.Add(exSvcHeaderKey, exSvcHeaderValue)
+	}
+
+	ctx, cancelFunc := context.WithTimeout(req.Context(), 8 * time.Second)
 	defer cancelFunc()
 
 	req = req.WithContext(ctx)
